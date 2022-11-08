@@ -34,14 +34,19 @@ class MainActivity : AppCompatActivity() {
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            0
-        )
+//        ActivityCompat.requestPermissions(
+//            this,
+//            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+//            0
+//        )
 
         custom_button.setOnClickListener {
-            download()
+            //download()
+            custom_button.setButtonState(ButtonState.Loading)
+            custom_button.setButtonState(ButtonState.Clicked)
+        }
+        cancelBtn.setOnClickListener {
+            custom_button.setButtonState(ButtonState.Completed)
         }
 
     }
