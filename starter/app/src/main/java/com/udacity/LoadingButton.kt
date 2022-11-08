@@ -13,6 +13,7 @@ class LoadingButton @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
     private var widthSize = 0
     private var heightSize = 0
+    private var text = "We are Loading"
 
     private val valueAnimator = ValueAnimator()
 
@@ -30,12 +31,19 @@ class LoadingButton @JvmOverloads constructor(
 
     }
 
+    private fun Paint.getTextCenter() = (descent() + ascent() / 2)
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        paint.color = resources.getColor(R.color.colorPrimary, null)
+        paint.color = context.getColor(R.color.colorPrimary)
         canvas?.drawRect(0f, 0f, widthSize.toFloat(), heightSize.toFloat(), paint)
-
+        paint.color = context.getColor(R.color.white)
+        canvas?.drawText(
+            text,
+            (widthSize / 2).toFloat(),
+            (heightSize / 2).toFloat() - paint.getTextCenter(),
+            paint
+        )
 
     }
 
