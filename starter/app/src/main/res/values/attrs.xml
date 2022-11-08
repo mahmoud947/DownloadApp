@@ -2,7 +2,9 @@
 <resources>
     <declare-styleable name="LoadingButton">
         <attr name="text" format="string" />
+        <attr name="onLoadingText" format="string"/>
         <attr name="textColor" format="color"/>
+        <attr name="circleMarginLift" format="dimension"/>
         <attr name="backgroundColor" format="color"/>
         <attr name="animationBackgroundColor" format="color"/>
         <attr name="textSize" format="dimension"/>
