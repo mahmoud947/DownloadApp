@@ -15,6 +15,7 @@ import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -22,6 +23,8 @@ import kotlinx.android.synthetic.main.content_main.*
 class MainActivity : AppCompatActivity() {
 
     private var downloadID: Long = 0
+
+    private lateinit var viewModel: MainViewModel
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
@@ -31,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
+        viewModel=ViewModelProvider(this)[MainViewModel::class.java]
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
 //        ActivityCompat.requestPermissions(
@@ -40,9 +43,11 @@ class MainActivity : AppCompatActivity() {
 //            0
 //        )
 
+
         custom_button.setOnClickListener {
             custom_button.setButtonState(ButtonState.Loading)
-            download()
+            //download()
+            viewModel.sendNotification(getString(R.string.notification_title),getString(R.string.notification_description))
         }
 
 

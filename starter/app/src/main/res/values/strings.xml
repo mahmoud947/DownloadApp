@@ -13,4 +13,5 @@
     <string name="title_activity_detail">DetailActivity</string>
 
     <string name="notification_id">MainNotification</string>
+    <string name="chanel_name">Download Channel</string>
 </resources>
