@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.withStyledAttributes
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -13,7 +14,11 @@ class LoadingButton @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
     private var widthSize = 0
     private var heightSize = 0
-    private var text = "We are Loading"
+    private var text = ""
+    private var textSize = 0.0f
+    private var textColor = context.getColor(R.color.white)
+    private var recBackgroundColor = context.getColor(R.color.colorPrimary)
+
 
     private val valueAnimator = ValueAnimator()
 
@@ -28,16 +33,26 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     init {
-
+        context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
+            text = getString(R.styleable.LoadingButton_text).toString()
+            textColor =
+                getColor(R.styleable.LoadingButton_textColor, context.getColor(R.color.white))
+            recBackgroundColor = getColor(
+                R.styleable.LoadingButton_backgroundColor,
+                context.getColor(R.color.colorPrimary)
+            )
+            textSize = getDimension(R.styleable.LoadingButton_textSize,21.0f)
+            paint.textSize = textSize
+        }
     }
 
     private fun Paint.getTextCenter() = (descent() + ascent() / 2)
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        paint.color = context.getColor(R.color.colorPrimary)
+        paint.color = recBackgroundColor
         canvas?.drawRect(0f, 0f, widthSize.toFloat(), heightSize.toFloat(), paint)
-        paint.color = context.getColor(R.color.white)
+        paint.color = textColor
         canvas?.drawText(
             text,
             (widthSize / 2).toFloat(),

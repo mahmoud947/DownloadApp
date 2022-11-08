@@ -12,6 +12,10 @@
     <com.udacity.LoadingButton
         android:id="@+id/custom_button"
         android:layout_width="0dp"
+        app:text="we are loading"
+        app:textSize="21sp"
+        app:backgroundColor="@color/colorPrimary"
+        app:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_height="60dp"
