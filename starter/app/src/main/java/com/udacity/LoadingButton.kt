@@ -1,17 +1,27 @@
 package com.udacity
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Interpolator
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import androidx.annotation.RequiresApi
 import androidx.core.content.withStyledAttributes
 import kotlin.math.min
 import kotlin.properties.Delegates
+
+
+const val ANIMATION_DURATION = 3000L
+
 
 class LoadingButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -44,10 +54,11 @@ class LoadingButton @JvmOverloads constructor(
 
     // current animations value
     private var bgAnimationValue = 0.0f
-    private var circleAnimationValue = 0.0f
+    private var sweepAngleValue = 0.0f
 
-    private val animationSet: AnimatorSet = AnimatorSet()
-
+    private val animationSet: AnimatorSet = AnimatorSet().apply {
+        duration = ANIMATION_DURATION
+    }
     private var bgValueAnimator: ValueAnimator? = null
     private var circleValueAnimator: ValueAnimator? = null
 
@@ -60,12 +71,18 @@ class LoadingButton @JvmOverloads constructor(
             is ButtonState.Loading -> {
                 text = loadingText
                 isLoading = true
-                paint.getTextBounds(text, 0, text.length, textBounder)
-                textWidth = textBounder.width().toFloat()
+                paint.calculateTextWidth()
                 invalidate()
+                initCircleAnimationAnimation()
+                initBackgroundAnimation()
+                circleValueAnimator?.start()
+                bgValueAnimator?.start()
+//                animationSet.playTogether(circleValueAnimator, bgValueAnimator)
+//                animationSet.start()
 
             }
             is ButtonState.Completed -> {
+                finishAnimationWithIncreaseSpeed()
 
             }
             is ButtonState.Clicked -> {
@@ -83,6 +100,7 @@ class LoadingButton @JvmOverloads constructor(
 
     init {
         isClickable = isClick
+
         context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
             defaultText = getString(R.styleable.LoadingButton_text) ?: defaultText
             loadingText = getString(R.styleable.LoadingButton_onLoadingText) ?: loadingText
@@ -107,8 +125,13 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     // get center point between  ascent and descent to calculate center of text (vertical)
-    private fun Paint.getTextCenter() = (descent() + ascent() / 2)
+    private fun Paint.calculateTextCenter() = (descent() + ascent() / 2)
 
+    // get textWidth after draw
+    private fun Paint.calculateTextWidth() {
+        paint.getTextBounds(text, 0, text.length, textBounder)
+        textWidth = textBounder.width().toFloat()
+    }
 
     private fun drawButtonBody(canvas: Canvas?) {
         paint.color = recBackgroundColor
@@ -118,7 +141,7 @@ class LoadingButton @JvmOverloads constructor(
 
     private fun drawButtonAnimationBackground(canvas: Canvas?) {
         paint.color = bgAnimationColor
-        canvas?.drawRect(0f, 0f, widthSize.toFloat(), heightSize.toFloat(), paint)
+        canvas?.drawRect(0f, 0f, bgAnimationValue, heightSize.toFloat(), paint)
     }
 
     private fun drawText(canvas: Canvas?) {
@@ -128,7 +151,7 @@ class LoadingButton @JvmOverloads constructor(
         canvas?.drawText(
             text,
             centerPointX,
-            centerPointY - paint.getTextCenter(),
+            centerPointY - paint.calculateTextCenter(),
             paint
         )
     }
@@ -147,7 +170,68 @@ class LoadingButton @JvmOverloads constructor(
 
     private fun drawArc(canvas: Canvas?) {
         paint.color = context.getColor(R.color.colorAccent)
-        canvas?.drawArc(calculateArcRecF(), 0f, 360f, true, paint)
+        canvas?.drawArc(calculateArcRecF(), 0f, sweepAngleValue, true, paint)
+    }
+
+
+    private fun initBackgroundAnimation() {
+        bgValueAnimator = ValueAnimator.ofFloat(0f, widthSize.toFloat()).apply {
+            duration = ANIMATION_DURATION
+            repeatCount = ValueAnimator.INFINITE
+            repeatMode = ValueAnimator.RESTART
+            interpolator = AccelerateInterpolator()
+
+            addUpdateListener {
+                bgAnimationValue = it.animatedValue as Float
+                invalidate()
+            }
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    animation?.cancel()
+                    text = defaultText
+                    isLoading = false
+                    invalidate()
+                }
+            })
+        }
+    }
+
+    private fun initCircleAnimationAnimation() {
+        circleValueAnimator = ValueAnimator.ofFloat(0f, 360f).apply {
+            duration = ANIMATION_DURATION
+            interpolator = AccelerateInterpolator()
+            repeatCount = ValueAnimator.INFINITE
+            repeatMode = ValueAnimator.RESTART
+            addUpdateListener {
+                sweepAngleValue = it.animatedValue as Float
+                invalidate()
+            }
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    animation?.cancel()
+                    invalidate()
+                }
+            })
+        }
+    }
+
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun finishAnimationWithIncreaseSpeed(){
+//        circleValueAnimator?.cancel()
+//        bgValueAnimator?.cancel()
+//        animationSet.cancel()
+        circleValueAnimator?.apply {
+            currentPlayTime = if (currentPlayTime<2500) 2500 else ANIMATION_DURATION
+            repeatCount = 0
+        }
+        bgValueAnimator?.apply{
+            currentPlayTime = if (currentPlayTime<2500) 2500 else ANIMATION_DURATION
+            repeatCount = 0
+        }
+
+        //animationSet.currentPlayTime =2000
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -158,6 +242,7 @@ class LoadingButton @JvmOverloads constructor(
         // draw button background animation(rectangle) only on Loading state
         if (isLoading)
             drawButtonAnimationBackground(canvas)
+
 
         // draw text in button
         drawText(canvas)

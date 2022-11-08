@@ -41,13 +41,10 @@ class MainActivity : AppCompatActivity() {
 //        )
 
         custom_button.setOnClickListener {
-            //download()
             custom_button.setButtonState(ButtonState.Loading)
-            custom_button.setButtonState(ButtonState.Clicked)
+            download()
         }
-        cancelBtn.setOnClickListener {
-            custom_button.setButtonState(ButtonState.Completed)
-        }
+
 
     }
 
