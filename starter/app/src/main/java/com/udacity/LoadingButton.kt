@@ -3,6 +3,7 @@ package com.udacity
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import kotlin.properties.Delegates
@@ -19,6 +20,11 @@ class LoadingButton @JvmOverloads constructor(
 
     }
 
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        textSize = 50.0f
+        textAlign = Paint.Align.CENTER
+    }
 
     init {
 
@@ -27,6 +33,9 @@ class LoadingButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        paint.color = resources.getColor(R.color.colorPrimary, null)
+        canvas?.drawRect(0f, 0f, widthSize.toFloat(), heightSize.toFloat(), paint)
+
 
     }
 
