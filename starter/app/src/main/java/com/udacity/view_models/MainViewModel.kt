@@ -79,7 +79,6 @@ class MainViewModel(
                     else -> {
                         isSuccess = false
                         _buttonState.value = ButtonState.Completed
-                        downloadManager.remove(id)
                         Log.d(TAG, "onReceive: failed isSuccess:$isSuccess")
                         sendNotification(
                             app.getString(R.string.notification_title),
@@ -87,6 +86,10 @@ class MainViewModel(
                             fileName
                         )
                     }
+                }
+                if (id!=downloadID){
+                    isSuccess = false
+                    _buttonState.value = ButtonState.Completed
                 }
             }
 

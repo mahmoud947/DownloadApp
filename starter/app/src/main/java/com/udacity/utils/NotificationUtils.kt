@@ -62,4 +62,8 @@ fun NotificationManager.createChannel(channelId: String, channelName: String) {
         this.createNotificationChannel(notificationChannel)
 
     }
+
+}
+fun NotificationManager.clearAllNotification(){
+    cancelAll()
 }

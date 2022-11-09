@@ -13,6 +13,8 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.view.animation.AccelerateInterpolator
+import android.view.animation.BounceInterpolator
+import android.view.animation.DecelerateInterpolator
 import androidx.core.content.withStyledAttributes
 import com.udacity.R
 import kotlin.math.min
@@ -241,16 +243,17 @@ class LoadingButton @JvmOverloads constructor(
     private fun finishAnimationWithIncreaseSpeed() {
 
         circleValueAnimator?.apply {
-            currentPlayTime = ANIMATION_DURATION - 500
             repeatCount = 0
-            Log.d(TAG, "finishAnimationWithIncreaseSpeed: $currentPlayTime")
+            duration = if((ANIMATION_DURATION- currentPlayTime)>=500)ANIMATION_DURATION- currentPlayTime else 500
+            interpolator = DecelerateInterpolator(1f)
+
         }
         bgValueAnimator?.apply {
-            currentPlayTime = ANIMATION_DURATION - 500
             repeatCount = 0
+            duration = if((ANIMATION_DURATION- currentPlayTime)>=500)ANIMATION_DURATION- currentPlayTime else 500
+            interpolator = DecelerateInterpolator(1f)
         }
 
-        //animationSet.currentPlayTime =2000
     }
 
     override fun onDraw(canvas: Canvas?) {

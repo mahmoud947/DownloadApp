@@ -57,9 +57,12 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+        
+        onResume()
 
 
     }
+
 
 
     private fun requestPermission() {
