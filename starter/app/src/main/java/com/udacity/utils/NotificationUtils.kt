@@ -43,6 +43,8 @@ fun NotificationManager.sendNotification(
         .setContentTitle(title)
         .setContentText(description)
         .setContentIntent(pendingIntent)
+        .addAction(1,applicationContext.getString(R.string.notification_button),pendingIntent)
+        .setPriority(NotificationManager.IMPORTANCE_LOW)
         .setAutoCancel(true)
 
     notify(NOTIFICATION_ID, builder.build())

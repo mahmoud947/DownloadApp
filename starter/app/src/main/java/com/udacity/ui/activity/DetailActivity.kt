@@ -1,5 +1,6 @@
 package com.udacity.ui.activity
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -25,7 +26,13 @@ class DetailActivity : AppCompatActivity() {
         )
         binding.layout.lifecycleOwner = this
         binding.layout.detail = downloadDetail
+        binding.layout.button.setOnClickListener {
 
+            val intent = Intent(this,MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+            finish()
+        }
     }
 
 }

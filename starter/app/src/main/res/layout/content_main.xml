@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+<variable
+    name="viewModel"
+    type="com.udacity.view_models.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,13 +19,16 @@
 
         <com.udacity.ui.custom_view.LoadingButton
             android:id="@+id/custom_button"
+
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_margin="20dp"
+            setState="@{viewModel.buttonState}"
+            android:onClick="@{()->viewModel.download()}"
             android:layout_marginBottom="16dp"
-            app:circleMarginLift="4dp"
             android:contentDescription="@string/dowanload_button"
             app:backgroundColor="@color/colorPrimary"
+            app:circleMarginLift="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,12 +41,11 @@
             android:id="@+id/radioGroup"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toTopOf="@+id/custom_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress">
+            app:layout_constraintTop_toBottomOf="@+id/imageView">
 
             <RadioButton
                 android:id="@+id/glideRadioBtn"
@@ -50,7 +54,7 @@
                 android:layout_margin="@dimen/large_margin"
                 android:minHeight="48dp"
                 android:text="@string/glide_image_loading_library_by_bump_tech"
-                android:textSize="18sp" />
+                android:textSize="21sp" />
 
             <RadioButton
                 android:id="@+id/udacityRadioBtn"
@@ -81,20 +85,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/undraw_download" />
 
-        <EditText
-            android:id="@+id/editTextTextEmailAddress"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:hint="@string/enter_url"
-            android:inputType="textEmailAddress"
-            android:minHeight="48dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

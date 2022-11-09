@@ -9,19 +9,17 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
-import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.animation.AccelerateInterpolator
-import androidx.annotation.RequiresApi
 import androidx.core.content.withStyledAttributes
 import com.udacity.R
-import com.udacity.ui.custom_view.ButtonState
 import kotlin.math.min
 import kotlin.properties.Delegates
 
 
-const val ANIMATION_DURATION = 3000L
+const val ANIMATION_DURATION = 4000L
 
 
 class LoadingButton @JvmOverloads constructor(
@@ -76,10 +74,16 @@ class LoadingButton @JvmOverloads constructor(
                 invalidate()
                 initCircleAnimationAnimation()
                 initBackgroundAnimation()
+                circleValueAnimator?.apply {
+
+                    repeatCount = ValueAnimator.INFINITE
+                }
+                bgValueAnimator?.apply {
+
+                    repeatCount = ValueAnimator.INFINITE
+                }
                 circleValueAnimator?.start()
                 bgValueAnimator?.start()
-//                animationSet.playTogether(circleValueAnimator, bgValueAnimator)
-//                animationSet.start()
 
             }
             is ButtonState.Completed -> {
@@ -87,6 +91,22 @@ class LoadingButton @JvmOverloads constructor(
 
             }
             is ButtonState.Clicked -> {
+                text = loadingText
+                isLoading = true
+                paint.calculateTextWidth()
+                invalidate()
+                initCircleAnimationAnimation()
+                initBackgroundAnimation()
+                circleValueAnimator?.apply {
+
+                    repeatCount = 0
+                }
+                bgValueAnimator?.apply {
+
+                    repeatCount = 0
+                }
+                circleValueAnimator?.start()
+                bgValueAnimator?.start()
 
             }
         }
@@ -218,17 +238,15 @@ class LoadingButton @JvmOverloads constructor(
 
 
 
+    private fun finishAnimationWithIncreaseSpeed() {
 
-    private fun finishAnimationWithIncreaseSpeed(){
-//        circleValueAnimator?.cancel()
-//        bgValueAnimator?.cancel()
-//        animationSet.cancel()
         circleValueAnimator?.apply {
-            currentPlayTime = if (currentPlayTime<2500) 2500 else ANIMATION_DURATION
+            currentPlayTime = ANIMATION_DURATION - 500
             repeatCount = 0
+            Log.d(TAG, "finishAnimationWithIncreaseSpeed: $currentPlayTime")
         }
-        bgValueAnimator?.apply{
-            currentPlayTime = if (currentPlayTime<2500) 2500 else ANIMATION_DURATION
+        bgValueAnimator?.apply {
+            currentPlayTime = ANIMATION_DURATION - 500
             repeatCount = 0
         }
 

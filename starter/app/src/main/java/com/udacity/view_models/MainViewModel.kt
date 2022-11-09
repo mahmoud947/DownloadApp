@@ -1,4 +1,4 @@
-package com.udacity
+package com.udacity.view_models
 
 import android.app.Application
 import android.app.DownloadManager
@@ -17,12 +17,17 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.udacity.R
+import com.udacity.createChannel
 import com.udacity.model.DownloadDetail
+import com.udacity.sendNotification
+import com.udacity.ui.custom_view.ButtonState
 
-enum class SelectedRepository {
-    RETROFIT,
-    GLIDE,
-    UDACITY
+sealed class SelectedRepository(url:String?) {
+    data class Retrofit(val url: String): SelectedRepository(url = url)
+    data class Glide(val url: String): SelectedRepository(url = url)
+    data class Udacity(val url: String): SelectedRepository(url = url)
+    object Empty: SelectedRepository(null)
 }
 
 private const val TAG = "MainViewModel"
@@ -40,42 +45,51 @@ class MainViewModel(
 
     private val _isDoanLoadCompleted: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDoanLoadCompleted: LiveData<Boolean> get() = _isDoanLoadCompleted
-    private var isSuccess:Boolean = false
+
+    private var isSuccess: Boolean = false
+    private var fileName:String = ""
+
+    private val _buttonState: MutableLiveData<ButtonState> = MutableLiveData(ButtonState.Completed)
+    val buttonState: LiveData<ButtonState> get() = _buttonState
+
+    private val _url:MutableLiveData<SelectedRepository?> = MutableLiveData(null)
+
+
+
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-
             val query = DownloadManager.Query()
             query.setFilterById(id!!)
             val cursor = downloadManager.query(query)
-            if (cursor.moveToFirst()){
-                val status=cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
-                when(status){
-                    DownloadManager.STATUS_SUCCESSFUL-> {
-                        isSuccess= true
+            if (cursor.moveToFirst()) {
+                val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                when (status) {
+                    DownloadManager.STATUS_SUCCESSFUL -> {
+                        isSuccess = true
+                        _buttonState.value = ButtonState.Completed
                         Log.d(TAG, "onReceive: success isSuccess:$isSuccess")
+                        sendNotification(
+                            app.getString(R.string.notification_title),
+                            "$fileName is Downloaded",
+                            fileName
+                        )
                     }
-                    else-> {
+                    else -> {
                         isSuccess = false
+                        _buttonState.value = ButtonState.Completed
                         downloadManager.remove(id)
                         Log.d(TAG, "onReceive: failed isSuccess:$isSuccess")
+                        sendNotification(
+                            app.getString(R.string.notification_title),
+                            "$fileName is Download field",
+                            fileName
+                        )
                     }
                 }
             }
 
-            if (id == downloadID) {
-                _isDoanLoadCompleted.value = true
-
-                sendNotification(
-                    app.getString(R.string.notification_title),
-                    app.getString(R.string.notification_description)
-                )
-
-            } else {
-                Toast.makeText(app, "download field", Toast.LENGTH_SHORT).show()
-                isSuccess= false
-            }
         }
     }
 
@@ -87,7 +101,8 @@ class MainViewModel(
 
     fun sendNotification(
         title: String,
-        description: String
+        description: String,
+        fileName:String
     ) {
         notificationManager.createChannel(
             app.getString(R.string.notification_id),
@@ -97,22 +112,45 @@ class MainViewModel(
             title,
             description,
             app,
-            DownloadDetail(SelectedRepository.RETROFIT.name, isSuccess)
+            DownloadDetail(fileName, isSuccess)
         )
     }
 
+    fun download(){
+        val url = _url.value
+        when(url){
+            is SelectedRepository.Udacity ->{
+                fileName = app.getString(R.string.loadapp_current_repository_by_udacity)
+                handelDownload(url.url)
+            }
+            is SelectedRepository.Retrofit ->{
+                fileName = app.getString(R.string.retorfit_type_save_http_client_for_android_and_java_by_square_inc)
+                handelDownload(url.url)
+            }
+            is SelectedRepository.Glide ->{
+                fileName = app.getString(R.string.glide_image_loading_library_by_bump_tech)
+                handelDownload(url.url)
+            }
+            else -> {
+                Toast.makeText(app,"Select any thing",Toast.LENGTH_SHORT).show()
+                _buttonState.value = ButtonState.Clicked
+            }
+        }
 
+    }
 
-    fun download() {
+    private fun handelDownload(url: String) {
+
+        _buttonState.value = ButtonState.Loading
         val request =
-            DownloadManager.Request(Uri.parse(URL))
-                .setTitle(app.getString(R.string.app_name))
+            DownloadManager.Request(Uri.parse(url))
+                .setTitle(fileName)
                 .setDescription(app.getString(R.string.app_description))
 
                 .setDestinationInExternalPublicDir(
                     Environment.DIRECTORY_DOWNLOADS,
                     app.getString(R.string.app_name) + "." + MimeTypeMap.getFileExtensionFromUrl(
-                        URL
+                        url
                     )
                 )
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
@@ -131,15 +169,9 @@ class MainViewModel(
     fun onDownloadCompleted() {
         _isDoanLoadCompleted.value = false
     }
-
-    fun showToast(selectedRepository: SelectedRepository) {
-        Toast.makeText(app, selectedRepository.name, Toast.LENGTH_SHORT).show()
+    fun setUrl(url: SelectedRepository){
+        _url.value = url
     }
 
-    companion object {
-        private const val URL =
-            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
-        private const val CHANNEL_ID = "channelId"
-    }
 
 }

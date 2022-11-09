@@ -1,8 +1,6 @@
 package com.udacity.ui.activity
 
 import android.Manifest
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -11,21 +9,17 @@ import androidx.core.app.NotificationCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.udacity.ui.custom_view.ButtonState
-import com.udacity.MainViewModel
-import com.udacity.R
-import com.udacity.SelectedRepository
+import com.udacity.*
 import com.udacity.databinding.ActivityMainBinding
-
+import com.udacity.ui.custom_view.ButtonState
+import com.udacity.view_models.MainViewModel
+import com.udacity.view_models.SelectedRepository
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding:ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
 
-
-    private lateinit var notificationManager: NotificationManager
-    private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,32 +27,32 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setSupportActionBar(binding.toolbar)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        binding.layout.viewModel = viewModel
+        binding.layout.lifecycleOwner = this
 
-
-
-        binding.layout.customButton.setOnClickListener {
-            binding.layout.customButton.setButtonState(ButtonState.Loading)
-            viewModel.download()
-        }
 
 
         viewModel.isDoanLoadCompleted.observe(this, Observer {
-            if (it){
+            if (it) {
                 binding.layout.customButton.setButtonState(ButtonState.Completed)
                 viewModel.onDownloadCompleted()
             }
         })
 
         binding.layout.radioGroup.setOnCheckedChangeListener { radioGroup, id ->
-            when(id){
-                binding.layout.glideRadioBtn.id->{
-                   viewModel.showToast(SelectedRepository.GLIDE)
+            when (id) {
+                binding.layout.glideRadioBtn.id -> {
+                    viewModel.setUrl(url = SelectedRepository.Glide(GLIDE_URL))
                 }
-                binding.layout.udacityRadioBtn.id->{
-                    viewModel.showToast(SelectedRepository.UDACITY)
+                binding.layout.udacityRadioBtn.id -> {
+                    viewModel.setUrl(SelectedRepository.Udacity(UDACITY_URL))
                 }
-                binding.layout.retrofitRadioBtn.id->{
-                    viewModel.showToast(SelectedRepository.RETROFIT)
+                binding.layout.retrofitRadioBtn.id -> {
+                    viewModel.setUrl(SelectedRepository.Retrofit(RETROFIT_URL))
+                }
+                else->{
+                    viewModel.setUrl(SelectedRepository.Empty)
+
                 }
             }
 
@@ -83,7 +77,6 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
     }
-
 
 
 }
