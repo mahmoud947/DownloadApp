@@ -39,16 +39,11 @@ class MainActivity : AppCompatActivity() {
         binding.layout.customButton.setOnClickListener {
             binding.layout.customButton.setButtonState(ButtonState.Loading)
             viewModel.download()
-
         }
 
 
         viewModel.isDoanLoadCompleted.observe(this, Observer {
             if (it){
-                viewModel.sendNotification(
-                    getString(R.string.notification_title),
-                    getString(R.string.notification_description)
-                )
                 binding.layout.customButton.setButtonState(ButtonState.Completed)
                 viewModel.onDownloadCompleted()
             }

@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,7 @@ enum class SelectedRepository {
 }
 
 private const val TAG = "MainViewModel"
+
 class MainViewModel(
     private val app: Application
 ) : AndroidViewModel(app) {
@@ -34,19 +36,45 @@ class MainViewModel(
     ) as NotificationManager
 
     private var downloadID: Long = 0
-    private lateinit var downloadManager:DownloadManager
+    private lateinit var downloadManager: DownloadManager
 
     private val _isDoanLoadCompleted: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDoanLoadCompleted: LiveData<Boolean> get() = _isDoanLoadCompleted
+    private var isSuccess:Boolean = false
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+
+            val query = DownloadManager.Query()
+            query.setFilterById(id!!)
+            val cursor = downloadManager.query(query)
+            if (cursor.moveToFirst()){
+                val status=cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                when(status){
+                    DownloadManager.STATUS_SUCCESSFUL-> {
+                        isSuccess= true
+                        Log.d(TAG, "onReceive: success isSuccess:$isSuccess")
+                    }
+                    else-> {
+                        isSuccess = false
+                        downloadManager.remove(id)
+                        Log.d(TAG, "onReceive: failed isSuccess:$isSuccess")
+                    }
+                }
+            }
+
             if (id == downloadID) {
                 _isDoanLoadCompleted.value = true
 
-            }else{
-               Toast.makeText(app,"download field",Toast.LENGTH_SHORT).show()
+                sendNotification(
+                    app.getString(R.string.notification_title),
+                    app.getString(R.string.notification_description)
+                )
+
+            } else {
+                Toast.makeText(app, "download field", Toast.LENGTH_SHORT).show()
+                isSuccess= false
             }
         }
     }
@@ -65,13 +93,17 @@ class MainViewModel(
             app.getString(R.string.notification_id),
             app.getString(R.string.chanel_name)
         )
-        notificationManager.sendNotification(title, description, app, DownloadDetail("hello",true))
+        notificationManager.sendNotification(
+            title,
+            description,
+            app,
+            DownloadDetail(SelectedRepository.RETROFIT.name, isSuccess)
+        )
     }
 
 
+
     fun download() {
-
-
         val request =
             DownloadManager.Request(Uri.parse(URL))
                 .setTitle(app.getString(R.string.app_name))
@@ -89,7 +121,7 @@ class MainViewModel(
                 .setAllowedOverRoaming(true)
 
 
-       downloadManager =
+        downloadManager =
             app.getSystemService(AppCompatActivity.DOWNLOAD_SERVICE) as DownloadManager
         downloadID =
             downloadManager.enqueue(request)// enqueue puts the download request in the queue.

@@ -22,4 +22,7 @@
     <string name="un_known">Un Known</string>
     <string name="fail_state">Fail</string>
     <string name="success_state">Success</string>
+    <string name="status">Status</string>
+    <string name="file_name">File name:</string>
+    <string name="ok">OK</string>
 </resources>
