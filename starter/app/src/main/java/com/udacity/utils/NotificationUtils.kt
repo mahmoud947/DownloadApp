@@ -44,8 +44,9 @@ fun NotificationManager.sendNotification(
         .setContentText(description)
         .setContentIntent(pendingIntent)
         .addAction(1,applicationContext.getString(R.string.notification_button),pendingIntent)
-        .setPriority(NotificationManager.IMPORTANCE_LOW)
+        .setPriority(NotificationManager.IMPORTANCE_HIGH)
         .setAutoCancel(true)
+
 
     notify(NOTIFICATION_ID, builder.build())
 }
@@ -53,11 +54,12 @@ fun NotificationManager.sendNotification(
 fun NotificationManager.createChannel(channelId: String, channelName: String) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val notificationChannel: NotificationChannel =
-            NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW)
+            NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
         notificationChannel.apply {
             enableVibration(true)
             lightColor = Color.RED
             enableLights(true)
+
         }
         this.createNotificationChannel(notificationChannel)
 
