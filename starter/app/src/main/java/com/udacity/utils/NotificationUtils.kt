@@ -9,6 +9,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.udacity.model.DownloadDetail
+import com.udacity.ui.activity.DetailActivity
 
 const val NOTIFICATION_ID = 1
 
@@ -17,14 +19,13 @@ fun NotificationManager.sendNotification(
     title: String,
     description: String,
     applicationContext: Context,
-    fileName: String,
-    status: String
+   downloadDetail: DownloadDetail
 ) {
 
     val contentIntent = Intent(applicationContext, DetailActivity::class.java)
         .apply {
-            putExtra(FILE_NAME_EXTRA, fileName)
-            putExtra(STATUS_EXTRA, status)
+            putExtra(FILE_NAME_EXTRA, downloadDetail.fileName)
+            putExtra(STATUS_EXTRA,downloadDetail.isSuccess)
         }
 
     val pendingIntent = PendingIntent.getActivity(

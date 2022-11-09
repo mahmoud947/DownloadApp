@@ -1,4 +1,4 @@
-package com.udacity
+package com.udacity.ui.custom_view
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -6,7 +6,6 @@ import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Interpolator
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
@@ -16,6 +15,8 @@ import android.view.View
 import android.view.animation.AccelerateInterpolator
 import androidx.annotation.RequiresApi
 import androidx.core.content.withStyledAttributes
+import com.udacity.R
+import com.udacity.ui.custom_view.ButtonState
 import kotlin.math.min
 import kotlin.properties.Delegates
 
@@ -217,7 +218,7 @@ class LoadingButton @JvmOverloads constructor(
 
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     private fun finishAnimationWithIncreaseSpeed(){
 //        circleValueAnimator?.cancel()
 //        bgValueAnimator?.cancel()

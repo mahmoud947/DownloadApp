@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.udacity.model.DownloadDetail
 
 enum class SelectedRepository {
     RETROFIT,
@@ -65,7 +65,7 @@ class MainViewModel(
             app.getString(R.string.notification_id),
             app.getString(R.string.chanel_name)
         )
-        notificationManager.sendNotification(title, description, app)
+        notificationManager.sendNotification(title, description, app, DownloadDetail("hello",true))
     }
 
 

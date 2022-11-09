@@ -1,26 +1,20 @@
-package com.udacity
+package com.udacity.ui.activity
 
 import android.Manifest
-import android.app.DownloadManager
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.database.DatabaseUtils
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.webkit.MimeTypeMap
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.udacity.ui.custom_view.ButtonState
+import com.udacity.MainViewModel
+import com.udacity.R
+import com.udacity.SelectedRepository
 import com.udacity.databinding.ActivityMainBinding
 
 
@@ -36,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setSupportActionBar(binding.toolbar)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 

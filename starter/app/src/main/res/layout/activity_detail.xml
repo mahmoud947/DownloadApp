@@ -10,7 +10,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".DetailActivity">
+        tools:context=".ui.activity.DetailActivity">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
@@ -26,7 +26,7 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <include layout="@layout/content_detail" />
+        <include android:id="@+id/layout" layout="@layout/content_detail" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/okBtn"

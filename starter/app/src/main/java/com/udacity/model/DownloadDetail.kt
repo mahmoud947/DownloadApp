@@ -1,6 +1,6 @@
-package com.udacity
+package com.udacity.model
 
 data class DownloadDetail(
     val fileName:String,
-    val status:String
+    val isSuccess:Boolean
 )
