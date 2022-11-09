@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.webkit.MimeTypeMap
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -44,16 +45,35 @@ class MainActivity : AppCompatActivity() {
         binding.layout.customButton.setOnClickListener {
             binding.layout.customButton.setButtonState(ButtonState.Loading)
             viewModel.download()
-            viewModel.sendNotification(
-                getString(R.string.notification_title),
-                getString(R.string.notification_description)
-            )
+
         }
+
+
         viewModel.isDoanLoadCompleted.observe(this, Observer {
             if (it){
+                viewModel.sendNotification(
+                    getString(R.string.notification_title),
+                    getString(R.string.notification_description)
+                )
                 binding.layout.customButton.setButtonState(ButtonState.Completed)
+                viewModel.onDownloadCompleted()
             }
         })
+
+        binding.layout.radioGroup.setOnCheckedChangeListener { radioGroup, id ->
+            when(id){
+                binding.layout.glideRadioBtn.id->{
+                   viewModel.showToast(SelectedRepository.GLIDE)
+                }
+                binding.layout.udacityRadioBtn.id->{
+                    viewModel.showToast(SelectedRepository.UDACITY)
+                }
+                binding.layout.retrofitRadioBtn.id->{
+                    viewModel.showToast(SelectedRepository.RETROFIT)
+                }
+            }
+
+        }
 
 
     }

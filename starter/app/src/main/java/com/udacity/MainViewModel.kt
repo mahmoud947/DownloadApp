@@ -9,14 +9,22 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import android.webkit.MimeTypeMap
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
+enum class SelectedRepository {
+    RETROFIT,
+    GLIDE,
+    UDACITY
+}
 
+private const val TAG = "MainViewModel"
 class MainViewModel(
     private val app: Application
 ) : AndroidViewModel(app) {
@@ -26,15 +34,19 @@ class MainViewModel(
     ) as NotificationManager
 
     private var downloadID: Long = 0
+    private lateinit var downloadManager:DownloadManager
 
     private val _isDoanLoadCompleted: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDoanLoadCompleted:LiveData<Boolean> get() = _isDoanLoadCompleted
+    val isDoanLoadCompleted: LiveData<Boolean> get() = _isDoanLoadCompleted
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             if (id == downloadID) {
                 _isDoanLoadCompleted.value = true
+
+            }else{
+               Toast.makeText(app,"download field",Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -59,6 +71,7 @@ class MainViewModel(
 
     fun download() {
 
+
         val request =
             DownloadManager.Request(Uri.parse(URL))
                 .setTitle(app.getString(R.string.app_name))
@@ -75,7 +88,8 @@ class MainViewModel(
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
 
-        val downloadManager =
+
+       downloadManager =
             app.getSystemService(AppCompatActivity.DOWNLOAD_SERVICE) as DownloadManager
         downloadID =
             downloadManager.enqueue(request)// enqueue puts the download request in the queue.
@@ -84,6 +98,10 @@ class MainViewModel(
 
     fun onDownloadCompleted() {
         _isDoanLoadCompleted.value = false
+    }
+
+    fun showToast(selectedRepository: SelectedRepository) {
+        Toast.makeText(app, selectedRepository.name, Toast.LENGTH_SHORT).show()
     }
 
     companion object {
