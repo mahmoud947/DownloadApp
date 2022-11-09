@@ -8,6 +8,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.database.DatabaseUtils
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -15,16 +17,17 @@ import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
+import com.udacity.databinding.ActivityMainBinding
+
 
 
 class MainActivity : AppCompatActivity() {
-
-    private var downloadID: Long = 0
-
+    private lateinit var binding:ActivityMainBinding
     private lateinit var viewModel: MainViewModel
+
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
@@ -32,57 +35,46 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-        viewModel=ViewModelProvider(this)[MainViewModel::class.java]
-        registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
-
-//        ActivityCompat.requestPermissions(
-//            this,
-//            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-//            0
-//        )
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
+        setSupportActionBar(binding.toolbar)
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
 
-        custom_button.setOnClickListener {
-            custom_button.setButtonState(ButtonState.Loading)
-            //download()
-            viewModel.sendNotification(getString(R.string.notification_title),getString(R.string.notification_description))
+
+        binding.layout.customButton.setOnClickListener {
+            binding.layout.customButton.setButtonState(ButtonState.Loading)
+            viewModel.download()
+            viewModel.sendNotification(
+                getString(R.string.notification_title),
+                getString(R.string.notification_description)
+            )
         }
+        viewModel.isDoanLoadCompleted.observe(this, Observer {
+            if (it){
+                binding.layout.customButton.setButtonState(ButtonState.Completed)
+            }
+        })
 
 
     }
 
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-        }
+
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            0
+        )
+
     }
 
-    private fun download() {
-
-        val request =
-            DownloadManager.Request(Uri.parse(URL))
-                .setTitle(getString(R.string.app_name))
-                .setDescription(getString(R.string.app_description))
-
-                .setDestinationInExternalPublicDir(
-                    Environment.DIRECTORY_DOWNLOADS,
-                    getString(R.string.app_name) +"."+ MimeTypeMap.getFileExtensionFromUrl(URL))
-                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        .setRequiresCharging(false)
-                        .setAllowedOverMetered(true)
-                        .setAllowedOverRoaming(true)
-
-                    val downloadManager = getSystemService (DOWNLOAD_SERVICE) as DownloadManager
-        downloadID =
-            downloadManager.enqueue(request)// enqueue puts the download request in the queue.
+    private fun isPermissionGranted(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
-    companion object {
-        private const val URL =
-            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
-        private const val CHANNEL_ID = "channelId"
-    }
+
 
 }

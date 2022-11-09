@@ -14,4 +14,9 @@
 
     <string name="notification_id">MainNotification</string>
     <string name="chanel_name">Download Channel</string>
+    <string name="glide_image_loading_library_by_bump_tech">Glide - Image Loading Library by Bump Tech</string>
+    <string name="loadapp_current_repository_by_udacity">LoadApp - Current repository by Udacity</string>
+    <string name="retorfit_type_save_http_client_for_android_and_java_by_square_inc">Retorfit - Type-save Http client for Android and java by Square,Inc</string>
+    <string name="enter_url">Enter url</string>
+    <string name="dowanload_button">Download button</string>
 </resources>
