@@ -10,80 +10,83 @@
             type="com.udacity.model.DownloadDetail" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
+        app:layoutDescription="@xml/content_detail_scene"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context=".ui.activity.DetailActivity"
         tools:showIn="@layout/activity_detail">
+
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
             android:text="@string/file_name"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView3" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="@string/status"
-            android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView4" />
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
             android:text="@{detail.fileName}"
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/button"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textView2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textView"
-
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.01999998"
+            app:layout_constraintStart_toEndOf="@+id/textView2"
             tools:text="@string/loadapp_current_repository_by_udacity" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:text="@string/status"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView4"
             setDownloadStatus="@{detail.isSuccess}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/textView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView3"
-            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:layout_constraintStart_toEndOf="@+id/textView"
             tools:text="Fail" />
 
         <Button
             android:id="@+id/button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:background="@color/colorAccent"
             android:text="@string/ok"
             android:textColor="@color/white"
-            android:background="@color/colorAccent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>
